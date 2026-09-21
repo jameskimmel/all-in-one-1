@@ -10,6 +10,7 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-harp
@@ -45,7 +46,7 @@ spec:
               value: https://{{ .Values.NC_DOMAIN }}
             - name: TZ
               value: "{{ .Values.TIMEZONE }}"
-          image: ghcr.io/nextcloud-releases/aio-harp:20260825_084538
+          image: ghcr.io/nextcloud-releases/aio-harp:20260916_075031
           readinessProbe:
             exec:
               command:

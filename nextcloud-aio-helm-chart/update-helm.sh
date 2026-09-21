@@ -228,6 +228,10 @@ find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec se
 find ./ -name 'nextcloud-aio-nextcloud-data-persistentvolumeclaim.yaml' -exec sed -i "s/{{- if .Values.STORAGE_CLASS }}/{{- else if .Values.STORAGE_CLASS }}/" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*deployment.yaml' -exec sed -i "/restartPolicy:/d" \{} \;  
+# Effectively disable the progress deadline (max int32) so that slow container startups
+# are never reported as failed rollouts
+# shellcheck disable=SC1083
+find ./ -name '*deployment.yaml' -exec sed -i "/^  replicas: 1$/a\ \ progressDeadlineSeconds: 2147483647" \{} \;
 # shellcheck disable=SC1083
 find ./ -name '*apache*' -exec sed -i "s|$APACHE_PORT|{{ .Values.APACHE_PORT }}|" \{} \;
 # shellcheck disable=SC1083
@@ -428,18 +432,13 @@ sed -i "s|^version:.*|version: $AIO_VERSION|" ../helm-chart/Chart.yaml
 
 # Conversion of sample.conf
 cp sample.conf /tmp/
-sed -i 's|"||g' /tmp/sample.conf
 sed -i 's|=|: |' /tmp/sample.conf
 sed -i 's|= |: |' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_DATADIR/d' /tmp/sample.conf
 sed -i '/^APACHE_IP_BINDING/d' /tmp/sample.conf
 sed -i '/^NEXTCLOUD_MOUNT/d' /tmp/sample.conf
 sed -i "/WATCHTOWER_DOCKER_SOCKET_PATH/d" /tmp/sample.conf
-sed -i 's/ yes / "yes" /' /tmp/sample.conf
-sed -i 's/ no / "no" /' /tmp/sample.conf
-sed -i 's/"no" authentication/no authentication/' /tmp/sample.conf
 sed -i 's|^NEXTCLOUD_TRUSTED_CACERTS_DIR: .*|NEXTCLOUD_TRUSTED_CACERTS_DIR:        # Setting this to any value allows to automatically import root certificates into the Nextcloud container|' /tmp/sample.conf
-sed -i 's|17179869184|"17179869184"|' /tmp/sample.conf
 # shellcheck disable=SC2129
 echo "" >> /tmp/sample.conf
 # shellcheck disable=SC2129

@@ -9,6 +9,7 @@ metadata:
   namespace: "{{ .Values.NAMESPACE }}"
 spec:
   replicas: 1
+  progressDeadlineSeconds: 2147483647
   selector:
     matchLabels:
       io.kompose.service: nextcloud-aio-apache
@@ -67,7 +68,7 @@ spec:
               value: "{{ .Values.TIMEZONE }}"
             - name: WHITEBOARD_HOST
               value: nextcloud-aio-whiteboard
-          image: ghcr.io/nextcloud-releases/aio-apache:20260825_084538
+          image: ghcr.io/nextcloud-releases/aio-apache:20260916_075031
           readinessProbe:
             exec:
               command:
